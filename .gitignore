@@ -1,0 +1,8 @@
+package-lock.json
+dist/
+node_modules/
+
+test/**/*.d.ts
+test/**/*.d.ts.map
+test/**/*.js
+test/**/*.js.map
