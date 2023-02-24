@@ -23,3 +23,4 @@ While tradiditional neural networks are much more dynamic, where you can define 
 
 The host language will be TypeScript. Since this project is configured with node, I can use TensorFlow.js to implement the Neural Network itself: https://www.tensorflow.org/js. This means that =, lets say when the code make_model() is parsed, the equivalent TensorFlow code will be run with parameters that I defined, that will make the model. Similar for training, and predicting data. 
 For the time being, this lanaguage will only be able to support image classification with the help of Convolutional Neural Netrowks (CNN's)
+Some CNN's I have build with TensorFlow : [GitHub Repo](https://github.com/sauryanshu55/Food-Identification-ConvNeuralNet)
