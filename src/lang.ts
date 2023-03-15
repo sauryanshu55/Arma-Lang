@@ -18,11 +18,11 @@ export type Typ = TyNum | TyCharseq | TyBool | TyImg | TyDir | TyMat
  * Expressions
  */
 export type Num = { tag: 'num', value: number } // Num
-export type Charseq = { tag: 'string', value: string } // String
+export type Charseq = { tag: 'charseq', value: string } // String
 export type Bool = { tag: 'bool', value: Boolean } // Boolean
 export type If = { tag: 'if', e1: Exp; e2: Exp; e3: Exp } //If
 export type Var = { tag: 'var', value: string } //Variable
-export type Img = { tag: 'image', loc: string } //Image
+export type Img = { tag: 'img', loc: string } //Image
 export type Dir = { tag: 'dir', loc: string } // Directory
 export type Mat = { tag: 'mat', value: number[][] | number }; // Matrix
 export type Lam = { tag: 'lam'; param: string; typ: Typ; body: Exp } // Lambda
@@ -65,3 +65,59 @@ export const sprint = (exp: Exp): SPrint => ({ tag: 'print', exp })
  * Program
  */
 export type Prog = Stmt[]
+
+/***** Pretty-printer *********************************************************/
+
+/** @returns a pretty version of the expression `e`, suitable for debugging. */
+export function prettyExp(e: Exp): string {
+    switch (e.tag) {
+        case 'var':
+            return `${e.value}`
+        case 'num':
+            return `${e.value}`
+        case 'bool':
+            return e.value ? 'true' : 'false'
+        case 'lam':
+            return `(lambda ${e.param} ${prettyTyp(e.typ)} ${prettyExp(e.body)})`
+        case 'app':
+            return `(${prettyExp(e.head)} ${e.args.map(prettyExp).join(' ')})`
+        case 'if':
+            return `(if ${prettyExp(e.e1)} ${prettyExp(e.e2)} ${prettyExp(e.e3)})`
+        case 'mat':
+            return ''
+        case 'dir':
+            return ''
+        case 'img':
+            return ''
+        case 'charseq':gi
+            return ''
+
+    }
+}
+
+/** @returns a pretty version of the value `v`, suitable for debugging. */
+export function prettyValue(v: Value): string {
+    throw new Error('Unimplemented!')
+}
+
+/** @returns a pretty version of the type `t`. */
+export function prettyTyp(t: Typ): string {
+    throw new Error('Unimplemented!')
+}
+
+/** @returns a pretty version of the statement `s`. */
+export function prettyStmt(s: Stmt): string {
+    switch (s.tag) {
+        case 'define':
+            return `(define ${s.id} ${prettyExp(s.exp)})`
+        case 'assign':
+            return `(assign ${prettyExp(s.loc)} ${prettyExp(s.exp)}))`
+        case 'print':
+            return `(print ${prettyExp(s.exp)})`
+    }
+}
+
+/** @returns a pretty version of the program `p`. */
+export function prettyProg(p: Prog): string {
+    return p.map(prettyStmt).join('\n')
+}
