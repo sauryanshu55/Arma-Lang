@@ -21,4 +21,3 @@
 + make_array
 + load_data
 + 
-
