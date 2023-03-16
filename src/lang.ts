@@ -1,129 +1,197 @@
-/**
- * ABSTRACT SYNTAX TREE----------------------------------------------
- */
+/***** Abstract Syntax Tree ***************************************************/
 
-/**
- * Types
- */
-export type TyNum = { tag: 'num' }
-export type TyCharseq = { tag: 'charseq' }
-export type TyBool = { tag: 'bool' }
-export type TyImg = { tag: 'img' }
-export type TyDir = { tag: 'dir' }
-export type TyMat = { tag: 'mat' }
-
-export type tynum={tag:'num'}
-export type tycharseq={tag:'charseq'}
-export type tybool={tag:'bool'}
-export type tyimg={tag:'img'}
-export type tydir={tag:'dir'}
-export type tymat={tag:'mat'}
-
-export type Typ = TyNum | TyCharseq | TyBool | TyImg | TyDir | TyMat
-
-/**
- * Expressions
- */
-export type Num = { tag: 'num', value: number } // Num
-export type Charseq = { tag: 'charseq', value: string } // String
-export type Bool = { tag: 'bool', value: Boolean } // Boolean
-export type If = { tag: 'if', e1: Exp; e2: Exp; e3: Exp } //If
-export type Var = { tag: 'var', value: string } //Variable
-export type Img = { tag: 'img', loc: string } //Image
-export type Dir = { tag: 'dir', loc: string } // Directory
-export type Mat = { tag: 'mat', value: number[][] | number }; // Matrix
-export type Lam = { tag: 'lam'; param: string; typ: Typ; body: Exp } // Lambda
-export type App = { tag: 'app'; head: Exp; args: Exp[] } //Application
-
-
-export const evar = (value: string): Var => ({ tag: 'var', value })
+export type Num = { tag: 'num', value: number }
 export const num = (value: number): Num => ({ tag: 'num', value })
+
+export type Bool = { tag: 'bool', value: boolean }
 export const bool = (value: boolean): Bool => ({ tag: 'bool', value })
-export const ife = (e1: Exp, e2: Exp, e3: Exp): If => ({ tag: 'if', e1, e2, e3, })
-export const charseq = (str: Charseq) => ({ tag: 'charseq', str })
-export const img = (loc: String) => ({ tag: 'img', loc })
-export const dir = (loc: String) => ({ tag: 'dir', loc })
-export const mat = (m: Mat) => ({ tag: 'mat', m })
-export const lam = (param: string, typ: Typ, body: Exp): Lam => ({ tag: 'lam', param, typ, body, })
-export const app = (head: Exp, args: Exp[]): App => ({ tag: 'app', head, args })
 
-export type Exp = Var | Num | Bool | Charseq | If | Dir | Img | Mat | Lam | App
+export type Not = { tag: 'not', exp: Exp }
+export const not = (exp: Exp): Exp => ({ tag: 'not', exp })
 
-/**
- * Values
- */
+export type Plus = { tag: 'plus', e1: Exp, e2: Exp }
+export const plus = (e1: Exp, e2: Exp): Exp => ({ tag: 'plus', e1, e2 })
 
-export type Value = Num | Charseq | Bool | Img | Dir | Mat
+export type Eq = { tag: 'eq', e1: Exp, e2: Exp }
+export const eq = (e1: Exp, e2: Exp): Exp => ({ tag: 'eq', e1, e2 })
 
-/**
- * Statements
- */
+export type And = { tag: 'and', e1: Exp, e2: Exp }
+export const and = (e1: Exp, e2: Exp): Exp => ({ tag: 'and', e1, e2 })
 
-export type Stmt = SDefine | SAssign | SPrint
-export type SDefine = { tag: 'define'; id: string; exp: Exp }
-export type SAssign = { tag: 'assign'; loc: Exp; exp: Exp }
-export type SPrint = { tag: 'print'; exp: Exp }
+export type Or = { tag: 'or', e1: Exp, e2: Exp }
+export const or = (e1: Exp, e2: Exp): Exp => ({ tag: 'or', e1, e2 })
 
-export const sdefine = (id: string, exp: Exp): SDefine => ({ tag: 'define', id, exp, })
-export const sassign = (loc: Exp, exp: Exp): SAssign => ({ tag: 'assign', loc, exp, })
-export const sprint = (exp: Exp): SPrint => ({ tag: 'print', exp })
+export type If = { tag: 'if', e1: Exp, e2: Exp, e3: Exp }
+export const ife = (e1: Exp, e2: Exp, e3: Exp): Exp =>
+  ({ tag: 'if', e1, e2, e3 })
 
-/**
- * Program
- */
-export type Prog = Stmt[]
+export type Unit = { tag: 'unit'}
+export const unit:Unit = { tag: 'unit' }
+
+export type Exp = Num | Bool | Not | Plus | Eq | And | Or | If | Unit | Pair | Fst | Scn
+export type Value = Num | Bool | Unit | Pairval 
+
+export type Pair = { tag: 'pair', t1: Exp, t2: Exp }
+export const pair = (t1: Exp, t2: Exp): Exp => ({ tag: 'pair', t1, t2 })
+
+export type Pairval = { tag: 'pairval', t1: Value, t2: Value }
+export const pairval = (t1: Value, t2: Value): Value => ({ tag: 'pairval', t1, t2 })
+
+export type Fst = { tag: 'fst', pair: Exp }
+export const fst = (pair: Exp): Exp => ({ tag: 'fst', pair })
+
+export type Scn={tag:'scn',pair:Exp}
+export const scn = (pair: Exp): Exp => ({ tag: 'scn', pair })
+
+
+/**Typechecking lang */
+export type TyNat = { tag: 'nat' }
+export const tynat: Typ = ({ tag: 'nat' })
+
+export type TyBool = { tag: 'bool' }
+export const tybool: Typ = ({ tag: 'bool' })
+
+export type TyUnit = { tag: 'unit' }
+export const tyunit: Typ = ({ tag: 'unit' })
+
+export type TyPair= {tag: 'pair', t1: Typ, t2: Typ}
+export const typair = (t1: Typ, t2: Typ): Typ => ({ tag: 'pair', t1, t2 })
+
+export type TyPairval = { tag: 'pairval' }
+export const typairval: Typ = ({ tag: 'pairval' })
+
+export type TyFst={tag:'fst'}
+export const tyfst:Typ=({tag:'fst'})
+
+export type TyScn={tag:'scn'}
+export const tyscn:Typ=({tag:'scn'})
+
+export type Typ = TyNat | TyBool | TyUnit | TyPair |TyFst | TyScn | TyPairval
+
+
 
 /***** Pretty-printer *********************************************************/
 
-/** @returns a pretty version of the expression `e`, suitable for debugging. */
+/**
+ * @returns a pretty version of the expression `e`, suitable for debugging.
+ */
 export function prettyExp(e: Exp): string {
-    switch (e.tag) {
-        case 'var':
-            return `${e.value}`
-        case 'num':
-            return `${e.value}`
-        case 'bool':
-            return e.value ? 'true' : 'false'
-        case 'lam':
-            return `(lambda ${e.param} ${prettyTyp(e.typ)} ${prettyExp(e.body)})`
-        case 'app':
-            return `(${prettyExp(e.head)} ${e.args.map(prettyExp).join(' ')})`
-        case 'if':
-            return `(if ${prettyExp(e.e1)} ${prettyExp(e.e2)} ${prettyExp(e.e3)})`
-        case 'mat':
-            return 'matrix'
-        case 'dir':
-            return `${e.loc}`
-        case 'img':
-            return `${e.loc}`
-        case 'charseq':
-            return `${e.value}`
-    }
+  switch (e.tag) {
+    case 'num': return `${e.value}`
+    case 'bool': return e.value ? 'true' : 'false'
+    case 'not': return `(not ${prettyExp(e.exp)})`
+    case 'plus': return `(+ ${prettyExp(e.e1)} ${prettyExp(e.e2)})`
+    case 'eq': return `(= ${prettyExp(e.e1)} ${prettyExp(e.e2)})`
+    case 'and': return `(and ${prettyExp(e.e1)} ${prettyExp(e.e2)})`
+    case 'or': return `(or ${prettyExp(e.e1)} ${prettyExp(e.e2)})`
+    case 'if': return `(if ${prettyExp(e.e1)} ${prettyExp(e.e2)} ${prettyExp(e.e3)})`
+    case 'unit': return `unit`
+    case 'pair': return `(pair ${prettyExp(e.t1)} ${prettyExp(e.t2)})`
+    case 'fst': return `(fst ${prettyExp(e.pair)}))`
+    case 'scn': return `(scn ${prettyExp(e.pair)}))`
+  }
 }
 
-/** @returns a pretty version of the value `v`, suitable for debugging. */
-export function prettyValue(v: Value): string {
-    throw new Error('Unimplemented!')
-}
-
-/** @returns a pretty version of the type `t`. */
+/**
+ * @returns a pretty version of the type `t`.
+ */
 export function prettyTyp(t: Typ): string {
-    throw new Error('Unimplemented!')
+  switch (t.tag) {
+    case 'nat': return 'nat'
+    case 'bool': return 'bool'
+    case 'unit': return 'unit'
+    case 'pair': return 'pair'
+    case 'fst': return 'fst'
+    case 'scn': return 'scn'
+    case 'pairval': return 'pair'
+  }
 }
 
-/** @returns a pretty version of the statement `s`. */
-export function prettyStmt(s: Stmt): string {
-    switch (s.tag) {
-        case 'define':
-            return `(define ${s.id} ${prettyExp(s.exp)})`
-        case 'assign':
-            return `(assign ${prettyExp(s.loc)} ${prettyExp(s.exp)}))`
-        case 'print':
-            return `(print ${prettyExp(s.exp)})`
+/***** Evaluator **************************************************************/
+
+/**
+ * @returns the value that expression `e` evaluates to.
+ */
+export function evaluate(e: Exp): Value {
+  switch (e.tag) {
+    case 'num':
+      return e
+    case 'bool':
+      return e
+    case 'not': {
+      const v = evaluate(e.exp)
+      if (v.tag === 'bool') {
+        return bool(!v.value)
+      } else {
+        throw new Error(`Type error: negation expects a boolean but a ${v.tag} was given.`)
+      }
     }
+    case 'plus': {
+      const v1 = evaluate(e.e1)
+      const v2 = evaluate(e.e2)
+      if (v1.tag === 'num' && v2.tag === 'num') {
+        return num(v1.value + v2.value)
+      } else {
+        throw new Error(`Type error: plus expects two numbers but a ${v1.tag} and ${v2.tag} was given.`)
+      }
+    }
+    case 'eq': {
+      const v1 = evaluate(e.e1)
+      const v2 = evaluate(e.e2)
+      return bool(v1 === v2)
+    }
+    case 'and': {
+      const v1 = evaluate(e.e1)
+      const v2 = evaluate(e.e2)
+      if (v1.tag === 'bool' && v2.tag === 'bool') {
+        return bool(v1.value && v2.value)
+      } else {
+        throw new Error(`Type error: && expects two booleans but a ${v1.tag} and ${v2.tag} was given.`)
+      }
+    }
+    case 'or': {
+      const v1 = evaluate(e.e1)
+      const v2 = evaluate(e.e2)
+      if (v1.tag === 'bool' && v2.tag === 'bool') {
+        return bool(v1.value || v2.value)
+      } else {
+        throw new Error(`Type error: || expects two booleans but a ${v1.tag} and ${v2.tag} was given.`)
+      }
+    }
+    case 'if': {
+      const v = evaluate(e.e1)
+      if (v.tag === 'bool') {
+        return v.value ? evaluate(e.e2) : evaluate(e.e3)
+      } else {
+        throw new Error(`Type error: if expects a boolean in guard position but a ${v.tag} was given.`)
+      }
+    }
+    case 'pair': {
+      const elt1 = evaluate(e.t1)
+      const elt2 = evaluate(e.t2)
+      return pairval(elt1, elt2)
+    }
+    case 'fst':{      
+      const elt1=evaluate(e.pair)
+      if (elt1.tag==="pairval"){
+        return elt1.t1
+      }
+      else{
+        throw new Error(`Type error: fst expects a boolean in guard position but a ${e.tag} was given.`)
+      }
+    }
+
+    case 'scn':{
+      const elt2=evaluate(e.pair)
+      if (elt2.tag==="pairval"){
+        return elt2.t2
+      }
+      else{
+        throw new Error(`Type error: scn expects a boolean in guard position but a ${e.tag} was given.`)
+      }
+    }
+    
+    case 'unit': return e
+  }
 }
 
-/** @returns a pretty version of the program `p`. */
-export function prettyProg(p: Prog): string {
-    return p.map(prettyStmt).join('\n')
-}
