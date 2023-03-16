@@ -50,28 +50,6 @@ export function typecheck (ctx: L.Ctx, e: L.Exp): L.Typ {
       }
       return t3
     }
-    case 'rec': {
-      let recTypMap = new Map<string, L.Typ>
-      for (let [key, value] of e.exps.entries()) {
-        if (typeof key !== 'string') {
-          throw new Error(`Type error: expected string but found ${typeof key}`)
-        }
-        recTypMap.set(key, typecheck(ctx, value))
-      }
-      return L.tyrec(recTypMap)
-    }
-    case 'field': {
-      const texp = typecheck(ctx, e.e)
-      if (texp.tag !== 'rec') {
-        throw new Error(`Type error: expected record type but found ${texp.tag}`)
-      } else {
-        if (texp.values.has(e.field)) {
-          return texp.values.get(e.field)!
-        } else {
-          throw new Error(`Type error: expected type for field ${e.field} but couldn't find one`)
-        }
-      }
-    }
   }
 }
 

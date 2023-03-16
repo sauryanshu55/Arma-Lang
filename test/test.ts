@@ -61,13 +61,13 @@ describe('interpretation', () => {
     expect(compileAndInterpret(prog2, false)).toStrictEqual(['120'])
   })
   
-  test('prog3', () => {
-    expect(compileAndInterpret(prog3, true)).toStrictEqual(['6'])
-  })
+  // test('prog3', () => {
+  //   expect(compileAndInterpret(prog3, true)).toStrictEqual(['6'])
+  // })
 
-  test('prog4', () => {
-    expect(compileAndInterpret(prog5, true)).toStrictEqual(['2'])
-  })
+  // test('prog4', () => {
+  //   expect(compileAndInterpret(prog5, true)).toStrictEqual(['2'])
+  // })
   // test('Print', () => {
   //   expect(compileAndPrint(prog2, false)).toStrictEqual('(define result 0)(define factorial (lambda n Nat (if (zero? n) 1 (* n (factorial (- n 1))))))(assign result (factorial 5))(print result)')
   // })

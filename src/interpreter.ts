@@ -4,7 +4,7 @@ import * as L from './lang'
 export type Output = string[]
 
 /** @returns the value that expression `e` evaluates to. */
-export function evaluate (env: L.Env, e: L.Exp): L.Value {
+export function evaluate(env: L.Env, e: L.Exp): L.Value {
   switch (e.tag) {
     case 'var': {
       if (env.has(e.value)) {
@@ -30,12 +30,10 @@ export function evaluate (env: L.Env, e: L.Exp): L.Value {
         }
       } else if (head.tag === 'prim') {
         return head.fn(args)
-      } else if (head.tag === 'recVal') {
-        throw new Error(`Runtime error: expected closure or primitive, but found '${L.prettyValue(head)}'`)
       } else {
         throw new Error(`Runtime error: expected closure or primitive, but found '${L.prettyExp(head)}'`)
       }
-    } 
+    }
     case 'if': {
       const v = evaluate(env, e.e1)
       if (v.tag === 'bool') {
@@ -44,27 +42,14 @@ export function evaluate (env: L.Env, e: L.Exp): L.Value {
         throw new Error(`Type error: 'if' expects a boolean in guard position but a ${v.tag} was given.`)
       }
     }
-    case 'rec': {
-      let recValMap = new Map<string, L.Value>
-      for (let [key, value] of e.exps.entries()) {
-        recValMap.set(key, evaluate(env, value))
-      }
-      return L.recVal(recValMap)
-    }
-    case 'field': {
-      const r = evaluate(env, e.e)
-      if (r.tag !== 'recVal') {
-        throw new Error(`Type error: 'field' expects a record but a ${r.tag} was given.`)
-      } else {
-        const map = r.values
-        if (map.has(e.field)) {
-          return map.get(e.field)!
-        }
-        else {
-          throw new Error (`Runtime error: unable to retrieve value for field ${e.field}.`)
-        }
-      }
-    }
+    case 'matrix':
+      throw new Error()
+    case 'img':
+      throw new Error()
+    case 'charseq':
+      throw new Error()
+      case 'dir':
+        throw new Error()
   }
 }
 

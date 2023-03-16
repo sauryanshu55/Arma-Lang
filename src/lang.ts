@@ -11,79 +11,43 @@ export type TyBool = { tag: 'bool' }
 export type TyArr = { tag: 'arr'; inputs: Typ[]; output: Typ }
 export type TyRec = { tag: 'rec'; values: Map<string, Typ> }
 export type TyField = { tag: 'field'; e: TyRec; field: string }
+export const tyarr = (inputs: Typ[], output: Typ): TyArr => ({ tag: 'arr', inputs, output })
 
 export const tynat: Typ = { tag: 'nat' }
 export const tybool: Typ = { tag: 'bool' }
-export const tyarr = (inputs: Typ[], output: Typ): TyArr => ({
-  tag: 'arr',
-  inputs,
-  output,
-})
-export const tyrec = (values: Map<string, Typ>): TyRec => ({
-  tag: 'rec',
-  values,
-})
-export const tyfield = (e: TyRec, field: string): TyField => ({
-  tag: 'field',
-  e,
-  field,
-})
+
 
 // Expressions
-
-// TODO: add expression forms for record literals and projection here!
-export type Exp = Var | Num | Bool | Lam | App | If | Rec | Field
+export type Exp = Var | Num | Bool | Lam | App | If | Matrix | Charseq | Dir | Img
 export type Var = { tag: 'var'; value: string }
 export type Num = { tag: 'num'; value: number }
 export type Bool = { tag: 'bool'; value: boolean }
 export type Lam = { tag: 'lam'; param: string; typ: Typ; body: Exp }
 export type App = { tag: 'app'; head: Exp; args: Exp[] }
 export type If = { tag: 'if'; e1: Exp; e2: Exp; e3: Exp }
-export type Rec = { tag: 'rec'; exps: Map<string, Exp> }
-export type Field = { tag: 'field'; e: Exp; field: string }
+export type Img = { tag: 'img', loc: String }
+export type Dir = { tag: 'dir', loc: String }
+export type Charseq = { tag: 'charseq', value: String }
+export type Matrix = { tag: 'matrix', dims: number[], data: Number[] }
 
 export const evar = (value: string): Var => ({ tag: 'var', value })
 export const num = (value: number): Num => ({ tag: 'num', value })
 export const bool = (value: boolean): Bool => ({ tag: 'bool', value })
-export const lam = (param: string, typ: Typ, body: Exp): Lam => ({
-  tag: 'lam',
-  param,
-  typ,
-  body,
-})
+export const lam = (param: string, typ: Typ, body: Exp): Lam => ({ tag: 'lam', param, typ, body, })
 export const app = (head: Exp, args: Exp[]): App => ({ tag: 'app', head, args })
-export const ife = (e1: Exp, e2: Exp, e3: Exp): If => ({
-  tag: 'if',
-  e1,
-  e2,
-  e3,
-})
-export const rec = (exps: Map<string, Exp>): Rec => ({ tag: 'rec', exps })
-export const field = (e: Exp, field: string): Field => ({
-  tag: 'field',
-  e,
-  field,
-})
+export const ife = (e1: Exp, e2: Exp, e3: Exp): If => ({ tag: 'if', e1, e2, e3, })
+export const img = (loc: string): Img => ({ tag: 'img', loc })
+export const dir = (loc: string): Dir => ({ tag: 'dir', loc })
+export const charseq = (str: String) => ({ tag: 'charseq', str })
+export const matrix = (dims: number[], data: number[]) => ({ tag: 'matrix', dims, data })
 
 // TODO: add record literals here!
-export type Value = Num | Bool | Prim | Closure | RecVal | Field
+export type Value = Num | Bool | Prim | Closure | Matrix | Charseq | Dir | Img
 export type Prim = { tag: 'prim'; name: string; fn: (args: Value[]) => Value }
 export type Closure = { tag: 'closure'; param: string; body: Exp; env: Env }
-export type RecVal = { tag: 'recVal'; values: Map<string, Value> }
 
-export const prim = (name: string, fn: (args: Value[]) => Value): Prim => ({
-  tag: 'prim',
-  name,
-  fn,
-})
-export const closure = (param: string, body: Exp, env: Env): Closure => ({
-  tag: 'closure',
-  param,
-  body,
-  env,
-})
-
-export const recVal = (values: Map<string, Value>): RecVal => ({tag: 'recVal', values})
+export const prim = (name: string, fn: (args: Value[]) => Value): Prim => ({ tag: 'prim', name, fn, })
+export const closure = (param: string, body: Exp, env: Env): Closure => ({ tag: 'closure', param, body, env, })
 
 // Statements
 
@@ -92,16 +56,8 @@ export type SDefine = { tag: 'define'; id: string; exp: Exp }
 export type SAssign = { tag: 'assign'; loc: Exp; exp: Exp }
 export type SPrint = { tag: 'print'; exp: Exp }
 
-export const sdefine = (id: string, exp: Exp): SDefine => ({
-  tag: 'define',
-  id,
-  exp,
-})
-export const sassign = (loc: Exp, exp: Exp): SAssign => ({
-  tag: 'assign',
-  loc,
-  exp,
-})
+export const sdefine = (id: string, exp: Exp): SDefine => ({ tag: 'define', id, exp, })
+export const sassign = (loc: Exp, exp: Exp): SAssign => ({ tag: 'assign', loc, exp, })
 export const sprint = (exp: Exp): SPrint => ({ tag: 'print', exp })
 
 // Programs
@@ -190,11 +146,15 @@ export function prettyExp(e: Exp): string {
       return `(${prettyExp(e.head)} ${e.args.map(prettyExp).join(' ')})`
     case 'if':
       return `(if ${prettyExp(e.e1)} ${prettyExp(e.e2)} ${prettyExp(e.e3)})`
-    case 'rec':
-      const flatMap = [...e.exps.entries()].flat()
-      return `(rec ${flatMap})`
-    case 'field':
-      return `(field ${prettyExp(e.e)} ${e.field})`
+    case 'matrix':
+      throw new Error()
+    case 'img':
+      throw new Error()
+    case 'charseq':
+      throw new Error()
+    case 'dir':
+      throw new Error()
+
   }
 }
 
@@ -209,11 +169,14 @@ export function prettyValue(v: Value): string {
       return `<closure>`
     case 'prim':
       return `<prim ${v.name}>`
-    case 'recVal':
-      const flatMap = [...v.values.entries()].flat()
-      return `<rec ${flatMap}>`
-    case 'field':
-      return `<field <rec> ${v.field}>`  
+    case 'matrix':
+      throw new Error()
+    case 'img':
+      throw new Error()
+    case 'charseq':
+      throw new Error()
+    case 'dir':
+      throw new Error()
   }
 }
 
