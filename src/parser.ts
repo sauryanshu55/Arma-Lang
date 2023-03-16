@@ -33,9 +33,6 @@ const functionMap: Map<string, (args: L.Exp[]) => L.Exp> =
     ['and', wrap2(L.and)],
     ['or', wrap2(L.or)],
     ['if', wrap3(L.ife)],
-    ['pair',wrap2(L.pair)],
-    ['scn',wrap1(L.scn)],
-    ['fst',wrap1(L.fst)],
   ])
 
 function chomp(state: ParserState, toks: Lex.Tok[], tag: string): void {
@@ -57,9 +54,6 @@ function parseExp(state: ParserState, toks: Lex.Tok[]): L.Exp {
   } else if (tok.tag === 'false') {
     state.index += 1
     return L.bool(false)
-  } else if (tok.tag === 'unit'){
-    state.index += 1
-    return L.unit
   }
   else if (tok.tag === 'num') {
     state.index += 1

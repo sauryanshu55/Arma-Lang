@@ -54,34 +54,12 @@ export function typecheck(e: L.Exp): L.Typ {
       } else {
         throw new Error(`Invalid and types`);
       }
-
-    case 'pair':
-       // Implement typechecker for pair
-       const t13=typecheck(e.t1)
-       const t14=typecheck(e.t2)
-       return L.typair(t13, t14)
-       
-
-    case 'fst': // Implement typechecker for fst
-      const t15=typecheck(e.pair)
-      if (t15.tag === 'pair'){
-        return t15.t1
-      }
-     else {
-      throw new Error(`Invalid fst types`);
-    }
-    case 'scn': 
-      const t16=typecheck(e.pair)
-      if (t16.tag === 'pair'){
-        return t16.t2
-      }
-    else {
-      throw new Error(`Invalid scn types`);
-    }
-
-    case 'unit':
-      return L.tyunit
-      
+    case 'directory':
+      throw new Error('Unimplemented!')
+    case 'matrix':
+      throw new Error('Unimplemented!')
+    case 'image':
+      throw new Error('Unimplemented!')
   }
 }
 

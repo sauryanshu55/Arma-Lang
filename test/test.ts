@@ -73,29 +73,6 @@ describe('Typechecker', () => {
       new Error('Invalid and types')
     )
   })
-  test('unit', () => {
-    expect(T.typecheck(L.unit)).toStrictEqual(L.tyunit)
-  })
-  test('pair - valid', () => {
-    expect(T.typecheck(L.pair(L.num(8), L.bool(false)))).toStrictEqual(
-      L.typair(L.tynat, L.tybool)
-    )
-  })
-  test('fst - valid', () => {
-    expect(T.typecheck(L.fst(L.pair(L.num(8), L.bool(false))))).toStrictEqual(L.tynat)
-  })
-  
-  test('fst - invalid', () => {
-    expect(() => T.typecheck(L.fst(L.num(8)))).toThrow(`Invalid fst types`)
-  })
-  
-  test('scn - valid', () => {
-    expect(T.typecheck(L.scn(L.pair(L.num(8), L.bool(false))))).toStrictEqual(L.tybool)
-  })
-  
-  test('scn - invalid', () => {
-    expect(() => T.typecheck(L.scn(L.num(8)))).toThrow(`Invalid scn types`)
-  })
 })
 
 
