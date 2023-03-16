@@ -12,6 +12,13 @@ export type TyImg = { tag: 'img' }
 export type TyDir = { tag: 'dir' }
 export type TyMat = { tag: 'mat' }
 
+export type tynum={tag:'num'}
+export type tycharseq={tag:'charseq'}
+export type tybool={tag:'bool'}
+export type tyimg={tag:'img'}
+export type tydir={tag:'dir'}
+export type tymat={tag:'mat'}
+
 export type Typ = TyNum | TyCharseq | TyBool | TyImg | TyDir | TyMat
 
 /**
@@ -84,14 +91,13 @@ export function prettyExp(e: Exp): string {
         case 'if':
             return `(if ${prettyExp(e.e1)} ${prettyExp(e.e2)} ${prettyExp(e.e3)})`
         case 'mat':
-            return ''
+            return 'matrix'
         case 'dir':
-            return ''
+            return `${e.loc}`
         case 'img':
-            return ''
-        case 'charseq':gi
-            return ''
-
+            return `${e.loc}`
+        case 'charseq':
+            return `${e.value}`
     }
 }
 
