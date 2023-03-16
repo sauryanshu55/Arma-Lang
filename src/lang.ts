@@ -1,170 +1,275 @@
+/* eslint-disable spaced-comment */
+
 /***** Abstract Syntax Tree ***************************************************/
 
-export type Num = { tag: 'num', value: number }
-export const num = (value: number): Num => ({ tag: 'num', value })
+// Types
 
-export type Bool = { tag: 'bool', value: boolean }
-export const bool = (value: boolean): Bool => ({ tag: 'bool', value })
-
-export type Not = { tag: 'not', exp: Exp }
-export const not = (exp: Exp): Exp => ({ tag: 'not', exp })
-
-export type Plus = { tag: 'plus', e1: Exp, e2: Exp }
-export const plus = (e1: Exp, e2: Exp): Exp => ({ tag: 'plus', e1, e2 })
-
-export type Eq = { tag: 'eq', e1: Exp, e2: Exp }
-export const eq = (e1: Exp, e2: Exp): Exp => ({ tag: 'eq', e1, e2 })
-
-export type And = { tag: 'and', e1: Exp, e2: Exp }
-export const and = (e1: Exp, e2: Exp): Exp => ({ tag: 'and', e1, e2 })
-
-export type Or = { tag: 'or', e1: Exp, e2: Exp }
-export const or = (e1: Exp, e2: Exp): Exp => ({ tag: 'or', e1, e2 })
-
-export type If = { tag: 'if', e1: Exp, e2: Exp, e3: Exp }
-export const ife = (e1: Exp, e2: Exp, e3: Exp): Exp =>
-    ({ tag: 'if', e1, e2, e3 })
-
-export type Matrix = { tag: 'matrix', dimensions: number[], values: number[] }
-export const matrix = (dimensions: number[], values: number[]): Matrix => ({ tag: 'matrix', dimensions, values })
-
-export type Image = ({ tag: 'image', loc: String })
-export const image = (loc: String): Image => ({ tag: 'image', loc })
-
-export type Directory = ({ tag: 'directory', loc: String })
-export const directory = (loc: String): Directory => ({ tag: 'directory', loc })
-
-export type Exp = Num | Bool | Not | Plus | Eq | And | Or | If | Directory | Image | Matrix
-export type Value = Num | Bool | Directory | Image
-
-
-/**Typechecking lang */
+// TODO: add the type of records here!
+export type Typ = TyNat | TyBool | TyArr | TyRec | TyField
 export type TyNat = { tag: 'nat' }
-export const tynat: Typ = ({ tag: 'nat' })
-
 export type TyBool = { tag: 'bool' }
-export const tybool: Typ = ({ tag: 'bool' })
+export type TyArr = { tag: 'arr'; inputs: Typ[]; output: Typ }
+export type TyRec = { tag: 'rec'; values: Map<string, Typ> }
+export type TyField = { tag: 'field'; e: TyRec; field: string }
 
-export type TyUnit = { tag: 'unit' }
-export const tyunit: Typ = ({ tag: 'unit' })
+export const tynat: Typ = { tag: 'nat' }
+export const tybool: Typ = { tag: 'bool' }
+export const tyarr = (inputs: Typ[], output: Typ): TyArr => ({
+  tag: 'arr',
+  inputs,
+  output,
+})
+export const tyrec = (values: Map<string, Typ>): TyRec => ({
+  tag: 'rec',
+  values,
+})
+export const tyfield = (e: TyRec, field: string): TyField => ({
+  tag: 'field',
+  e,
+  field,
+})
 
-export type TyPair = { tag: 'pair', t1: Typ, t2: Typ }
-export const typair = (t1: Typ, t2: Typ): Typ => ({ tag: 'pair', t1, t2 })
+// Expressions
 
-export type TyPairval = { tag: 'pairval' }
-export const typairval: Typ = ({ tag: 'pairval' })
+// TODO: add expression forms for record literals and projection here!
+export type Exp = Var | Num | Bool | Lam | App | If | Rec | Field
+export type Var = { tag: 'var'; value: string }
+export type Num = { tag: 'num'; value: number }
+export type Bool = { tag: 'bool'; value: boolean }
+export type Lam = { tag: 'lam'; param: string; typ: Typ; body: Exp }
+export type App = { tag: 'app'; head: Exp; args: Exp[] }
+export type If = { tag: 'if'; e1: Exp; e2: Exp; e3: Exp }
+export type Rec = { tag: 'rec'; exps: Map<string, Exp> }
+export type Field = { tag: 'field'; e: Exp; field: string }
 
-export type TyFst = { tag: 'fst' }
-export const tyfst: Typ = ({ tag: 'fst' })
+export const evar = (value: string): Var => ({ tag: 'var', value })
+export const num = (value: number): Num => ({ tag: 'num', value })
+export const bool = (value: boolean): Bool => ({ tag: 'bool', value })
+export const lam = (param: string, typ: Typ, body: Exp): Lam => ({
+  tag: 'lam',
+  param,
+  typ,
+  body,
+})
+export const app = (head: Exp, args: Exp[]): App => ({ tag: 'app', head, args })
+export const ife = (e1: Exp, e2: Exp, e3: Exp): If => ({
+  tag: 'if',
+  e1,
+  e2,
+  e3,
+})
+export const rec = (exps: Map<string, Exp>): Rec => ({ tag: 'rec', exps })
+export const field = (e: Exp, field: string): Field => ({
+  tag: 'field',
+  e,
+  field,
+})
 
-export type TyScn = { tag: 'scn' }
-export const tyscn: Typ = ({ tag: 'scn' })
+// TODO: add record literals here!
+export type Value = Num | Bool | Prim | Closure | RecVal | Field
+export type Prim = { tag: 'prim'; name: string; fn: (args: Value[]) => Value }
+export type Closure = { tag: 'closure'; param: string; body: Exp; env: Env }
+export type RecVal = { tag: 'recVal'; values: Map<string, Value> }
 
-export type Typ = TyNat | TyBool | TyUnit | TyPair | TyFst | TyScn | TyPairval
+export const prim = (name: string, fn: (args: Value[]) => Value): Prim => ({
+  tag: 'prim',
+  name,
+  fn,
+})
+export const closure = (param: string, body: Exp, env: Env): Closure => ({
+  tag: 'closure',
+  param,
+  body,
+  env,
+})
 
+export const recVal = (values: Map<string, Value>): RecVal => ({tag: 'recVal', values})
 
+// Statements
+
+export type Stmt = SDefine | SAssign | SPrint
+export type SDefine = { tag: 'define'; id: string; exp: Exp }
+export type SAssign = { tag: 'assign'; loc: Exp; exp: Exp }
+export type SPrint = { tag: 'print'; exp: Exp }
+
+export const sdefine = (id: string, exp: Exp): SDefine => ({
+  tag: 'define',
+  id,
+  exp,
+})
+export const sassign = (loc: Exp, exp: Exp): SAssign => ({
+  tag: 'assign',
+  loc,
+  exp,
+})
+export const sprint = (exp: Exp): SPrint => ({ tag: 'print', exp })
+
+// Programs
+
+export type Prog = Stmt[]
+
+/***** Runtime Environment ****************************************************/
+
+export class Env {
+  private outer?: Env
+  private bindings: Map<string, Value>
+
+  constructor(bindings?: Map<string, Value>) {
+    this.bindings = bindings || new Map()
+  }
+
+  has(x: string): boolean {
+    return (
+      this.bindings.has(x) || (this.outer !== undefined && this.outer.has(x))
+    )
+  }
+
+  get(x: string): Value {
+    if (this.bindings.has(x)) {
+      return this.bindings.get(x)!
+    } else if (this.outer !== undefined) {
+      return this.outer.get(x)
+    } else {
+      throw new Error(`Runtime error: unbound variable '${x}'`)
+    }
+  }
+
+  set(x: string, v: Value): void {
+    if (this.bindings.has(x)) {
+      throw new Error(`Runtime error: redefinition of variable '${x}'`)
+    } else {
+      this.bindings.set(x, v)
+    }
+  }
+
+  update(x: string, v: Value): void {
+    this.bindings.set(x, v)
+    if (this.bindings.has(x)) {
+      this.bindings.set(x, v)
+    } else if (this.outer !== undefined) {
+      return this.outer.update(x, v)
+    } else {
+      throw new Error(`Runtime error: unbound variable '${x}'`)
+    }
+  }
+
+  extend1(x: string, v: Value): Env {
+    const ret = new Env()
+    ret.outer = this
+    ret.bindings = new Map([[x, v]])
+    return ret
+  }
+}
+
+/***** Typechecking Context ***************************************************/
+
+/** A context maps names of variables to their types. */
+export type Ctx = Map<string, Typ>
+
+/** @returns a copy of `ctx` with the additional binding `x:t` */
+export function extendCtx(x: string, t: Typ, ctx: Ctx): Ctx {
+  const ret = new Map(ctx.entries())
+  ret.set(x, t)
+  return ret
+}
 
 /***** Pretty-printer *********************************************************/
 
-/**
- * @returns a pretty version of the expression `e`, suitable for debugging.
- */
+/** @returns a pretty version of the expression `e`, suitable for debugging. */
 export function prettyExp(e: Exp): string {
-    switch (e.tag) {
-        case 'num': return `${e.value}`
-        case 'bool': return e.value ? 'true' : 'false'
-        case 'not': return `(not ${prettyExp(e.exp)})`
-        case 'plus': return `(+ ${prettyExp(e.e1)} ${prettyExp(e.e2)})`
-        case 'eq': return `(= ${prettyExp(e.e1)} ${prettyExp(e.e2)})`
-        case 'and': return `(and ${prettyExp(e.e1)} ${prettyExp(e.e2)})`
-        case 'or': return `(or ${prettyExp(e.e1)} ${prettyExp(e.e2)})`
-        case 'if': return `(if ${prettyExp(e.e1)} ${prettyExp(e.e2)} ${prettyExp(e.e3)})`
-        case 'matrix': return ''
-        case 'directory': return ''
-        case 'image': return ''
-    }
+  switch (e.tag) {
+    case 'var':
+      return `${e.value}`
+    case 'num':
+      return `${e.value}`
+    case 'bool':
+      return e.value ? 'true' : 'false'
+    case 'lam':
+      return `(lambda ${e.param} ${prettyTyp(e.typ)} ${prettyExp(e.body)})`
+    case 'app':
+      return `(${prettyExp(e.head)} ${e.args.map(prettyExp).join(' ')})`
+    case 'if':
+      return `(if ${prettyExp(e.e1)} ${prettyExp(e.e2)} ${prettyExp(e.e3)})`
+    case 'rec':
+      const flatMap = [...e.exps.entries()].flat()
+      return `(rec ${flatMap})`
+    case 'field':
+      return `(field ${prettyExp(e.e)} ${e.field})`
+  }
 }
 
-/**
- * @returns a pretty version of the type `t`.
- */
+/** @returns a pretty version of the value `v`, suitable for debugging. */
+export function prettyValue(v: Value): string {
+  switch (v.tag) {
+    case 'num':
+      return `${v.value}`
+    case 'bool':
+      return v.value ? 'true' : 'false'
+    case 'closure':
+      return `<closure>`
+    case 'prim':
+      return `<prim ${v.name}>`
+    case 'recVal':
+      const flatMap = [...v.values.entries()].flat()
+      return `<rec ${flatMap}>`
+    case 'field':
+      return `<field <rec> ${v.field}>`  
+  }
+}
+
+/** @returns a pretty version of the type `t`. */
 export function prettyTyp(t: Typ): string {
-    switch (t.tag) {
-        case 'nat': return 'nat'
-        case 'bool': return 'bool'
-        case 'unit': return 'unit'
-        case 'pair': return 'pair'
-        case 'fst': return 'fst'
-        case 'scn': return 'scn'
-        case 'pairval': return 'pair'
-    }
+  switch (t.tag) {
+    case 'nat':
+      return 'nat'
+    case 'bool':
+      return 'bool'
+    case 'arr':
+      return `(-> ${t.inputs.map(prettyTyp).join(' ')} ${prettyTyp(t.output)})`
+    case 'rec':
+      return 'rec'
+    case 'field':
+      return 'field'
+  }
 }
 
-/***** Evaluator **************************************************************/
-
-/**
- * @returns the value that expression `e` evaluates to.
- */
-export function evaluate(e: Exp): Value {
-    switch (e.tag) {
-        case 'num':
-            return e
-        case 'bool':
-            return e
-        case 'not': {
-            const v = evaluate(e.exp)
-            if (v.tag === 'bool') {
-                return bool(!v.value)
-            } else {
-                throw new Error(`Type error: negation expects a boolean but a ${v.tag} was given.`)
-            }
-        }
-        case 'plus': {
-            const v1 = evaluate(e.e1)
-            const v2 = evaluate(e.e2)
-            if (v1.tag === 'num' && v2.tag === 'num') {
-                return num(v1.value + v2.value)
-            } else {
-                throw new Error(`Type error: plus expects two numbers but a ${v1.tag} and ${v2.tag} was given.`)
-            }
-        }
-        case 'eq': {
-            const v1 = evaluate(e.e1)
-            const v2 = evaluate(e.e2)
-            return bool(v1 === v2)
-        }
-        case 'and': {
-            const v1 = evaluate(e.e1)
-            const v2 = evaluate(e.e2)
-            if (v1.tag === 'bool' && v2.tag === 'bool') {
-                return bool(v1.value && v2.value)
-            } else {
-                throw new Error(`Type error: && expects two booleans but a ${v1.tag} and ${v2.tag} was given.`)
-            }
-        }
-        case 'or': {
-            const v1 = evaluate(e.e1)
-            const v2 = evaluate(e.e2)
-            if (v1.tag === 'bool' && v2.tag === 'bool') {
-                return bool(v1.value || v2.value)
-            } else {
-                throw new Error(`Type error: || expects two booleans but a ${v1.tag} and ${v2.tag} was given.`)
-            }
-        }
-        case 'if': {
-            const v = evaluate(e.e1)
-            if (v.tag === 'bool') {
-                return v.value ? evaluate(e.e2) : evaluate(e.e3)
-            } else {
-                throw new Error(`Type error: if expects a boolean in guard position but a ${v.tag} was given.`)
-            }
-        }
-        case 'directory':
-            throw new Error('Unimplemented!')
-        case 'matrix':
-            throw new Error('Unimplemented!')
-        case 'image':
-            throw new Error('Unimplemented!')
-    }
+/** @returns a pretty version of the statement `s`. */
+export function prettyStmt(s: Stmt): string {
+  switch (s.tag) {
+    case 'define':
+      return `(define ${s.id} ${prettyExp(s.exp)})`
+    case 'assign':
+      return `(assign ${prettyExp(s.loc)} ${prettyExp(s.exp)}))`
+    case 'print':
+      return `(print ${prettyExp(s.exp)})`
+  }
 }
 
+/** @returns a pretty version of the program `p`. */
+export function prettyProg(p: Prog): string {
+  return p.map(prettyStmt).join('\n')
+}
+
+/***** Equality ***************************************************************/
+
+/** @returns true iff t1 and t2 are equivalent types */
+export function typEquals(t1: Typ, t2: Typ): boolean {
+  // N.B., this could be collapsed into a single boolean expression. But we
+  // maintain this more verbose form because you will want to follow this
+  // pattern of (a) check the tags and (b) recursively check sub-components
+  // if/when you add additional types to the language.
+  if (t1.tag === 'nat' && t2.tag === 'nat') {
+    return true
+  } else if (t1.tag === 'bool' && t2.tag === 'bool') {
+    return true
+  } else if (t1.tag === 'arr' && t2.tag === 'arr') {
+    return (
+      typEquals(t1.output, t2.output) &&
+      t1.inputs.length === t2.inputs.length &&
+      t1.inputs.every((t, i) => typEquals(t, t2.inputs[i]))
+    )
+    // TODO: add an equality case for record types here!
+  } else {
+    return false
+  }
+}
