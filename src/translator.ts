@@ -3,10 +3,10 @@ import * as L from './lang'
 
 export function translateTyp(e: S.Sexp): L.Typ {
   if (e.tag === 'atom') {
-    if (e.value === 'num') {
-      return L.tynum
+    if (e.value === 'Nat') {
+      return L.tynat
     } else if (e.value === 'Bool') {
-      return L.TyBool
+      return L.tybool
     } else {
       throw new Error(`Parse error: unknown type '${e.value}'`)
     }
@@ -77,42 +77,6 @@ export function translateExp(e: S.Sexp): L.Exp {
           translateExp(args[1]),
           translateExp(args[2])
         )
-      }
-    } else if (head.tag === 'atom' && head.value === 'rec') {
-      if (args.length % 2 !== 0) {
-        throw new Error(
-          `Parse error: 'rec' expects an even number of arguments but ${args.length} were given`
-        )
-      } else {
-        let m = new Map<string, L.Exp>()
-        let i = 0
-        while (i < args.length) {
-          let field = args[i]
-          if (field.tag !== 'atom') {
-            throw new Error(
-              `Parse error: 'rec' expects fields to be of type string but ${field} was given`
-            )
-          } else {
-            let exp = translateExp(args[i + 1])
-            m.set(field.value, exp)
-            i += 2
-          }
-        }
-        return L.rec(m)
-      }
-    } else if (head.tag === 'atom' && head.value === 'field') {
-      if (args.length !== 2) {
-        throw new Error(
-          `Parse error: 'field' expects 2 arguments but ${args.length} were given`
-        )
-      } else {
-        if (args[1].tag !== 'atom') {
-          throw new Error(
-            `Parse error: 'field' expects the name to be of type string but ${args[1]} was given`
-          )
-        } else {
-          return L.field(translateExp(args[0]), args[1].value)
-        }
       }
     } else {
       return L.app(translateExp(head), args.map(translateExp))
