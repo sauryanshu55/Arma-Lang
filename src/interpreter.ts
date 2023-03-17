@@ -43,7 +43,7 @@ export function evaluate(env: L.Env, e: L.Exp): L.Value {
       }
     }
     case 'matrix':
-      return L.matrix(e.dims, e.data, createMatrix(e.data))
+      return L.matrix(e.dims,e.data,createMatrix(e.data))
     case 'img':
       return L.img(e.loc)
     case 'charseq':
@@ -53,10 +53,16 @@ export function evaluate(env: L.Env, e: L.Exp): L.Value {
   }
 }
 
-/**@returns a number[][] that represents a 2 x 2 matrix. Placeholder until a multidimentional matrix can be 
- * implemented
+/**
+ * Creates a 2x2 matrix from an array of numbers.
+ *
+ * @param data The array of numbers to be filled into the matrix.
+ * @returns A 2x2 matrix created from the input array.
+ * @throws An error if the input array does not have exactly four elements.
  */
-function createMatrix(data: number[]): number[][] {
+
+function createMatrix(stringData: string): number[][] {
+  var data=convertParamToArray(stringData)
   if (data.length !== 4) {
     throw new Error("Input array must contain exactly 4 numbers");
   }
@@ -69,6 +75,23 @@ function createMatrix(data: number[]): number[][] {
   }
   return matrix;
 }
+
+/**
+ * Converts a string representation of an array of numbers to an actual array of numbers.
+ *
+ * @param data The input string representing an array of numbers.
+ * @returns An array of numbers parsed from the input string.
+ * @throws An error if the input string contains no numbers.
+ */
+function convertParamToArray(data: string): number[] {
+  const regex = /\d+/g;
+  const matches = data.match(regex);
+  if (!matches) {
+    throw new Error("Input string contains no numbers");
+  }
+  return matches.map(Number);
+}
+
 
 // function createNDimMatrix(dimensions: number[], data: number[]): number[] {
 //   const result: number[] = [];

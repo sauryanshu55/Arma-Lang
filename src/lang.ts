@@ -35,7 +35,7 @@ export type If = { tag: 'if'; e1: Exp; e2: Exp; e3: Exp }
 export type Img = { tag: 'img', loc: string }
 export type Dir = { tag: 'dir', loc: string }
 export type Charseq = { tag: 'charseq', value: string }
-export type Matrix = { tag: 'matrix', dims: number[], data: number[], value: number[][] }
+export type Matrix = { tag: 'matrix', dims:string, data: string, value: number[][] }
 
 export const evar = (value: string): Var => ({ tag: 'var', value })
 export const num = (value: number): Num => ({ tag: 'num', value })
@@ -46,7 +46,7 @@ export const ife = (e1: Exp, e2: Exp, e3: Exp): If => ({ tag: 'if', e1, e2, e3, 
 export const img = (loc: string): Img => ({ tag: 'img', loc })
 export const dir = (loc: string): Dir => ({ tag: 'dir', loc })
 export const charseq = (value: string): Charseq => ({ tag: 'charseq', value })
-export const matrix = (dims: number[], data: number[], value: number[][]): Matrix => ({ tag: 'matrix', dims, data, value })
+export const matrix = (dims: string, data: string, value: number[][]): Matrix => ({ tag: 'matrix', dims, data, value })
 
 // TODO: add record literals here!
 export type Value = Num | Bool | Prim | Closure | Matrix | Charseq | Dir | Img
@@ -154,14 +154,13 @@ export function prettyExp(e: Exp): string {
     case 'if':
       return `(if ${prettyExp(e.e1)} ${prettyExp(e.e2)} ${prettyExp(e.e3)})`
     case 'matrix':
-      throw new Error()
+      return printMatrix(e.value)
     case 'img':
-      throw new Error()
+      return `(Image: ${e.loc})`
     case 'charseq':
-      throw new Error()
+      return `(${e.value})`
     case 'dir':
-      throw new Error()
-
+      return `(Directory: ${e.loc})`
   }
 }
 
@@ -177,13 +176,13 @@ export function prettyValue(v: Value): string {
     case 'prim':
       return `<prim ${v.name}>`
     case 'matrix':
-      throw new Error()
+      return printMatrix(v.value)
     case 'img':
-      throw new Error()
+      return `(Image: ${v.loc})`
     case 'charseq':
-      throw new Error()
+      return `${v.value}`
     case 'dir':
-      throw new Error()
+      return `(Directory: ${v.loc})`
   }
 }
 
@@ -227,6 +226,15 @@ export function prettyStmt(s: Stmt): string {
 export function prettyProg(p: Prog): string {
   return p.map(prettyStmt).join('\n')
 }
+
+function printMatrix(matrix: number[][]): string {
+  let result = "";
+  for (let i = 0; i < matrix.length; i++) {
+    result += `[${matrix[i].join(", ")}]\n`;
+  }
+  return result;
+}
+
 
 /***** Equality ***************************************************************/
 

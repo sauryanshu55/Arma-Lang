@@ -42,18 +42,8 @@ const prog2 = `
   (print result)
 `
 
-const prog3 = `
-  (define r (rec x 1 y (+ 2 4) z (* 3 10)))
-  (print (field r y))
-`
-
-  
-const prog4 = `(rec a 1 b 2 c 3 d 4 e 5)`
-
-const prog5=`
-(define r  (rec x 1 y 2 z 3))
-  (print (field r y))`
-
+const prog3='(define hello (matrix [2 2] [1 1 1 1]))'
+console.log(compileAndPrint(prog3, false))
 describe('interpretation', () => {
   test('prog1', () => {
     expect(compileAndInterpret(prog1, true)).toStrictEqual(['2', '11'])

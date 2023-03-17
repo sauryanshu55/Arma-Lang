@@ -78,7 +78,18 @@ export function translateExp(e: S.Sexp): L.Exp {
           translateExp(args[2])
         )
       }
-    } else {
+    } else if (head.tag==='atom' && head.value==='matrix'){
+      if (args.length !== 2) {
+        throw new Error(
+          `Parse error: 'if' expects 3 arguments but ${args.length} were given`
+        )
+      }
+      else{
+        return L.matrix(args[0],args[1])
+      }
+    }
+
+     else {
       return L.app(translateExp(head), args.map(translateExp))
     }
   }
