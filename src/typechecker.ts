@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import * as L from './lang'
 
-function expectedTypeMsg (expected: string, pos: number, fn: string, found: string): string {
+function expectedTypeMsg(expected: string, pos: number, fn: string, found: string): string {
   return `Type error: Expected ${expected} in position ${pos} of ${fn} but found ${found}`
 }
 
 /** @return the type of expression `e` */
-export function typecheck (ctx: L.Ctx, e: L.Exp): L.Typ {
+export function typecheck(ctx: L.Ctx, e: L.Exp): L.Typ {
   switch (e.tag) {
     case 'var': {
       if (ctx.has(e.value)) {
@@ -50,10 +50,18 @@ export function typecheck (ctx: L.Ctx, e: L.Exp): L.Typ {
       }
       return t3
     }
+    case 'charseq':
+      throw new Error()
+    case 'dir':
+      throw new Error()
+    case 'img':
+      throw new Error()
+    case 'matrix':
+      throw new Error()
   }
 }
 
-export function checkWF (ctx: L.Ctx, prog: L.Prog): void {
+export function checkWF(ctx: L.Ctx, prog: L.Prog): void {
   prog.forEach((s) => {
     switch (s.tag) {
       case 'define': {

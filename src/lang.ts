@@ -25,10 +25,10 @@ export type Bool = { tag: 'bool'; value: boolean }
 export type Lam = { tag: 'lam'; param: string; typ: Typ; body: Exp }
 export type App = { tag: 'app'; head: Exp; args: Exp[] }
 export type If = { tag: 'if'; e1: Exp; e2: Exp; e3: Exp }
-export type Img = { tag: 'img', loc: String }
-export type Dir = { tag: 'dir', loc: String }
-export type Charseq = { tag: 'charseq', value: String }
-export type Matrix = { tag: 'matrix', dims: number[], data: Number[] }
+export type Img = { tag: 'img', loc: string }
+export type Dir = { tag: 'dir', loc: string }
+export type Charseq = { tag: 'charseq', value: string }
+export type Matrix = { tag: 'matrix', dims: number[], data: number[], value: number[][] }
 
 export const evar = (value: string): Var => ({ tag: 'var', value })
 export const num = (value: number): Num => ({ tag: 'num', value })
@@ -38,8 +38,8 @@ export const app = (head: Exp, args: Exp[]): App => ({ tag: 'app', head, args })
 export const ife = (e1: Exp, e2: Exp, e3: Exp): If => ({ tag: 'if', e1, e2, e3, })
 export const img = (loc: string): Img => ({ tag: 'img', loc })
 export const dir = (loc: string): Dir => ({ tag: 'dir', loc })
-export const charseq = (str: String) => ({ tag: 'charseq', str })
-export const matrix = (dims: number[], data: number[]) => ({ tag: 'matrix', dims, data })
+export const charseq = (value: string): Charseq => ({ tag: 'charseq', value })
+export const matrix = (dims: number[], data: number[], value: number[][]): Matrix => ({ tag: 'matrix', dims, data, value })
 
 // TODO: add record literals here!
 export type Value = Num | Bool | Prim | Closure | Matrix | Charseq | Dir | Img

@@ -43,15 +43,55 @@ export function evaluate(env: L.Env, e: L.Exp): L.Value {
       }
     }
     case 'matrix':
-      throw new Error()
+      return L.matrix(e.dims, e.data, createMatrix(e.data))
     case 'img':
-      throw new Error()
+      return L.img(e.loc)
     case 'charseq':
-      throw new Error()
-      case 'dir':
-        throw new Error()
+      return L.charseq(e.value)
+    case 'dir':
+      return L.dir(e.loc)
   }
 }
+
+/**@returns a number[][] that represents a 2 x 2 matrix. Placeholder until a multidimentional matrix can be 
+ * implemented
+ */
+function createMatrix(data: number[]): number[][] {
+  if (data.length !== 4) {
+    throw new Error("Input array must contain exactly 4 numbers");
+  }
+  const matrix: number[][] = [];
+  for (let i = 0; i < 2; i++) {
+    matrix.push([]);
+    for (let j = 0; j < 2; j++) {
+      matrix[i].push(data[i * 2 + j]);
+    }
+  }
+  return matrix;
+}
+
+// function createNDimMatrix(dimensions: number[], data: number[]): number[] {
+//   const result: number[] = [];
+
+//   if (dimensions.length === 1) {
+//     // Base case: create a 1-dimensional array of data elements
+//     for (let i = 0; i < dimensions[0]; i++) {
+//       result.push(data[i]);
+//     }
+//   } else {
+//     // Recursive case: create a nested array for each element
+//     const innerDimensions = dimensions.slice(1);
+//     const innerSize = innerDimensions.reduce((acc, val) => acc * val, 1);
+
+//     for (let i = 0; i < dimensions[0]; i++) {
+//       const innerData = data.slice(i * innerSize, (i + 1) * innerSize);
+//       result.push(createNDimMatrix(innerDimensions, innerData));
+//     }
+//   }
+
+//   return result;
+// }
+
 
 /** @returns the result of executing program `prog` under environment `env` */
 export function execute(env: L.Env, prog: L.Prog): Output {
