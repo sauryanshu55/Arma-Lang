@@ -5,17 +5,24 @@
 // Types
 
 // TODO: add the type of records here!
-export type Typ = TyNat | TyBool | TyArr | TyRec | TyField
+export type Typ = TyNat | TyBool | TyArr | TyRec | TyField | TyMat | TyDir | TyImg | TyCharseq
 export type TyNat = { tag: 'nat' }
 export type TyBool = { tag: 'bool' }
 export type TyArr = { tag: 'arr'; inputs: Typ[]; output: Typ }
 export type TyRec = { tag: 'rec'; values: Map<string, Typ> }
 export type TyField = { tag: 'field'; e: TyRec; field: string }
-export const tyarr = (inputs: Typ[], output: Typ): TyArr => ({ tag: 'arr', inputs, output })
+export type TyMat = { tag: 'mat' }
+export type TyImg = { tag: 'img' }
+export type TyDir = { tag: 'dir' }
+export type TyCharseq = { tag: 'charseq' }
 
 export const tynat: Typ = { tag: 'nat' }
 export const tybool: Typ = { tag: 'bool' }
-
+export const tyarr = (inputs: Typ[], output: Typ): TyArr => ({ tag: 'arr', inputs, output })
+export const tyimg: TyImg = { tag: 'img' }
+export const tydir: TyDir = { tag: 'dir' }
+export const tymat: TyMat = { tag: 'mat' }
+export const tycharseq: TyCharseq = { tag: 'charseq' }
 
 // Expressions
 export type Exp = Var | Num | Bool | Lam | App | If | Matrix | Charseq | Dir | Img
@@ -193,6 +200,14 @@ export function prettyTyp(t: Typ): string {
       return 'rec'
     case 'field':
       return 'field'
+    case 'dir':
+      return 'dir'
+    case 'img':
+      return 'img'
+    case 'charseq':
+      return 'charseq'
+    case 'mat':
+      return 'mat'
   }
 }
 

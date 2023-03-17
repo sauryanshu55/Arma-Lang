@@ -51,13 +51,13 @@ export function typecheck(ctx: L.Ctx, e: L.Exp): L.Typ {
       return t3
     }
     case 'charseq':
-      throw new Error()
+      return L.tycharseq
     case 'dir':
-      throw new Error()
+      return L.tydir
     case 'img':
-      throw new Error()
+      return L.tyimg
     case 'matrix':
-      throw new Error()
+      return L.tymat
   }
 }
 
