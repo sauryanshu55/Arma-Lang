@@ -41,9 +41,6 @@ const prog2 = `
   (assign result (factorial 5))
   (print result)
 `
-
-const prog3='(define hello (matrix [2 2] [1 1 1 1]))'
-console.log(compileAndPrint(prog3, false))
 describe('interpretation', () => {
   test('prog1', () => {
     expect(compileAndInterpret(prog1, true)).toStrictEqual(['2', '11'])

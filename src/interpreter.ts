@@ -42,8 +42,6 @@ export function evaluate(env: L.Env, e: L.Exp): L.Value {
         throw new Error(`Type error: 'if' expects a boolean in guard position but a ${v.tag} was given.`)
       }
     }
-    case 'matrix':
-      return L.matrix(e.dims,e.data,createMatrix(e.data))
     case 'img':
       return L.img(e.loc)
     case 'charseq':
@@ -51,29 +49,6 @@ export function evaluate(env: L.Env, e: L.Exp): L.Value {
     case 'dir':
       return L.dir(e.loc)
   }
-}
-
-/**
- * Creates a 2x2 matrix from an array of numbers.
- *
- * @param data The array of numbers to be filled into the matrix.
- * @returns A 2x2 matrix created from the input array.
- * @throws An error if the input array does not have exactly four elements.
- */
-
-function createMatrix(stringData: string): number[][] {
-  var data=convertParamToArray(stringData)
-  if (data.length !== 4) {
-    throw new Error("Input array must contain exactly 4 numbers");
-  }
-  const matrix: number[][] = [];
-  for (let i = 0; i < 2; i++) {
-    matrix.push([]);
-    for (let j = 0; j < 2; j++) {
-      matrix[i].push(data[i * 2 + j]);
-    }
-  }
-  return matrix;
 }
 
 /**
@@ -91,30 +66,6 @@ function convertParamToArray(data: string): number[] {
   }
   return matches.map(Number);
 }
-
-
-// function createNDimMatrix(dimensions: number[], data: number[]): number[] {
-//   const result: number[] = [];
-
-//   if (dimensions.length === 1) {
-//     // Base case: create a 1-dimensional array of data elements
-//     for (let i = 0; i < dimensions[0]; i++) {
-//       result.push(data[i]);
-//     }
-//   } else {
-//     // Recursive case: create a nested array for each element
-//     const innerDimensions = dimensions.slice(1);
-//     const innerSize = innerDimensions.reduce((acc, val) => acc * val, 1);
-
-//     for (let i = 0; i < dimensions[0]; i++) {
-//       const innerData = data.slice(i * innerSize, (i + 1) * innerSize);
-//       result.push(createNDimMatrix(innerDimensions, innerData));
-//     }
-//   }
-
-//   return result;
-// }
-
 
 /** @returns the result of executing program `prog` under environment `env` */
 export function execute(env: L.Env, prog: L.Prog): Output {

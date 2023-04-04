@@ -56,8 +56,6 @@ export function typecheck(ctx: L.Ctx, e: L.Exp): L.Typ {
       return L.tydir
     case 'img':
       return L.tyimg
-    case 'matrix':
-      return L.tymat
   }
 }
 

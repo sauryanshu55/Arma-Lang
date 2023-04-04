@@ -5,13 +5,11 @@
 // Types
 
 // TODO: add the type of records here!
-export type Typ = TyNat | TyBool | TyArr | TyRec | TyField | TyMat | TyDir | TyImg | TyCharseq
+export type Typ = TyNat | TyBool | TyArr | TyDir | TyImg | TyCharseq
 export type TyNat = { tag: 'nat' }
 export type TyBool = { tag: 'bool' }
 export type TyArr = { tag: 'arr'; inputs: Typ[]; output: Typ }
-export type TyRec = { tag: 'rec'; values: Map<string, Typ> }
-export type TyField = { tag: 'field'; e: TyRec; field: string }
-export type TyMat = { tag: 'mat' }
+
 export type TyImg = { tag: 'img' }
 export type TyDir = { tag: 'dir' }
 export type TyCharseq = { tag: 'charseq' }
@@ -21,11 +19,10 @@ export const tybool: Typ = { tag: 'bool' }
 export const tyarr = (inputs: Typ[], output: Typ): TyArr => ({ tag: 'arr', inputs, output })
 export const tyimg: TyImg = { tag: 'img' }
 export const tydir: TyDir = { tag: 'dir' }
-export const tymat: TyMat = { tag: 'mat' }
 export const tycharseq: TyCharseq = { tag: 'charseq' }
 
 // Expressions
-export type Exp = Var | Num | Bool | Lam | App | If | Matrix | Charseq | Dir | Img
+export type Exp = Var | Num | Bool | Lam | App | If | Charseq | Dir | Img
 export type Var = { tag: 'var'; value: string }
 export type Num = { tag: 'num'; value: number }
 export type Bool = { tag: 'bool'; value: boolean }
@@ -35,7 +32,6 @@ export type If = { tag: 'if'; e1: Exp; e2: Exp; e3: Exp }
 export type Img = { tag: 'img', loc: string }
 export type Dir = { tag: 'dir', loc: string }
 export type Charseq = { tag: 'charseq', value: string }
-export type Matrix = { tag: 'matrix', dims:string, data: string, value: number[][] }
 
 export const evar = (value: string): Var => ({ tag: 'var', value })
 export const num = (value: number): Num => ({ tag: 'num', value })
@@ -46,10 +42,9 @@ export const ife = (e1: Exp, e2: Exp, e3: Exp): If => ({ tag: 'if', e1, e2, e3, 
 export const img = (loc: string): Img => ({ tag: 'img', loc })
 export const dir = (loc: string): Dir => ({ tag: 'dir', loc })
 export const charseq = (value: string): Charseq => ({ tag: 'charseq', value })
-export const matrix = (dims: string, data: string, value: number[][]): Matrix => ({ tag: 'matrix', dims, data, value })
 
 // TODO: add record literals here!
-export type Value = Num | Bool | Prim | Closure | Matrix | Charseq | Dir | Img
+export type Value = Num | Bool | Prim | Closure | Charseq | Dir | Img
 export type Prim = { tag: 'prim'; name: string; fn: (args: Value[]) => Value }
 export type Closure = { tag: 'closure'; param: string; body: Exp; env: Env }
 
@@ -153,8 +148,6 @@ export function prettyExp(e: Exp): string {
       return `(${prettyExp(e.head)} ${e.args.map(prettyExp).join(' ')})`
     case 'if':
       return `(if ${prettyExp(e.e1)} ${prettyExp(e.e2)} ${prettyExp(e.e3)})`
-    case 'matrix':
-      return printMatrix(e.value)
     case 'img':
       return `(Image: ${e.loc})`
     case 'charseq':
@@ -175,8 +168,6 @@ export function prettyValue(v: Value): string {
       return `<closure>`
     case 'prim':
       return `<prim ${v.name}>`
-    case 'matrix':
-      return printMatrix(v.value)
     case 'img':
       return `(Image: ${v.loc})`
     case 'charseq':
@@ -195,18 +186,12 @@ export function prettyTyp(t: Typ): string {
       return 'bool'
     case 'arr':
       return `(-> ${t.inputs.map(prettyTyp).join(' ')} ${prettyTyp(t.output)})`
-    case 'rec':
-      return 'rec'
-    case 'field':
-      return 'field'
     case 'dir':
       return 'dir'
     case 'img':
       return 'img'
     case 'charseq':
       return 'charseq'
-    case 'mat':
-      return 'mat'
   }
 }
 
@@ -226,15 +211,6 @@ export function prettyStmt(s: Stmt): string {
 export function prettyProg(p: Prog): string {
   return p.map(prettyStmt).join('\n')
 }
-
-function printMatrix(matrix: number[][]): string {
-  let result = "";
-  for (let i = 0; i < matrix.length; i++) {
-    result += `[${matrix[i].join(", ")}]\n`;
-  }
-  return result;
-}
-
 
 /***** Equality ***************************************************************/
 

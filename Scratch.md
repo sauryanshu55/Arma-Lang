@@ -6,7 +6,6 @@
 
 (To be made specifically for lang)
 + Arrays
-+ Matrix
 + Image ?
 + Directory ?
 + Class
@@ -17,7 +16,7 @@
 + compile_model
 + fit_model
 + pred
-+ make_matrix
++
 + make_array
 + load_data
 + 
