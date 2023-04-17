@@ -41,14 +41,37 @@ const prog2 = `
   (assign result (factorial 5))
   (print result)
 `
+ const prog3=`
+ (define result 0)
+  (define calc_half
+    (lambda n Nat
+      (/ n 2)
+      ))
+  (assign result (calc_half 6))
+  (print result)`
+
+  const prog4=
+  `
+  (define string "Hello")
+  (print string)
+  `
+
+console.log(compileAndPrint(prog4))
 describe('interpretation', () => {
   test('prog1', () => {
-    expect(compileAndInterpret(prog1, true)).toStrictEqual(['2', '11'])
+    expect(compileAndInterpret(prog1, false)).toStrictEqual(['2', '11'])
   })
   test('prog2', () => {
     expect(compileAndInterpret(prog2, false)).toStrictEqual(['120'])
   })
-  
+
+  test('prog3', () => {
+    expect(compileAndInterpret(prog3, false)).toStrictEqual(['3'])
+  })
+
+  test('prog4', () => {
+    expect(compileAndInterpret(prog4,false)).toStrictEqual(['"Hello"'])
+  })
   // test('prog3', () => {
   //   expect(compileAndInterpret(prog3, true)).toStrictEqual(['6'])
   // })

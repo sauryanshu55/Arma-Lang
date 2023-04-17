@@ -151,7 +151,7 @@ export function prettyExp(e: Exp): string {
     case 'img':
       return `(Image: ${e.loc})`
     case 'charseq':
-      return `(${e.value})`
+      return `("${e.value}")`
     case 'dir':
       return `(Directory: ${e.loc})`
   }

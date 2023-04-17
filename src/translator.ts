@@ -7,7 +7,10 @@ export function translateTyp(e: S.Sexp): L.Typ {
       return L.tynat
     } else if (e.value === 'Bool') {
       return L.tybool
-    } else {
+    } else if (e.value == 'Charseq') {
+      return L.tycharseq
+    }
+    else {
       throw new Error(`Parse error: unknown type '${e.value}'`)
     }
   } else {
@@ -37,7 +40,11 @@ export function translateExp(e: S.Sexp): L.Exp {
       return L.bool(true)
     } else if (e.value === 'false') {
       return L.bool(false)
-    } else if (/\d+$/.test(e.value)) {
+    } 
+    else if (/"[a-zA-Z0-9\s]*"/.test(e.value)) {
+      return L.charseq(e.value.slice(1, -1))
+    }
+     else if (/\d+$/.test(e.value)) {
       return L.num(parseInt(e.value))
     } else {
       // N.B., any other chunk of text will be considered a variable
@@ -79,7 +86,7 @@ export function translateExp(e: S.Sexp): L.Exp {
         )
       }
     }
-     else {
+    else {
       return L.app(translateExp(head), args.map(translateExp))
     }
   }
