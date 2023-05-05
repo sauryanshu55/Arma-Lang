@@ -10,3 +10,14 @@ Named after my favorite video game Arma 3, Arma Lang is a programming language w
 
 This compiler is written in TypeScript, and the project is based using Node.js runtime environment.
 
+Here's a code snippet written in Arma-Lang that defines a variable, calculates the factorial, and prints the result
+```
+(define result 0)
+  (define factorial
+    (lambda n Nat
+      (if (zero? n)
+          1
+          (* n (factorial (- n 1))))))
+  (assign result (factorial 5))
+  (print result)
+```
